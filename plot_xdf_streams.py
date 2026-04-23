@@ -1,5 +1,7 @@
 import argparse
+import csv
 import json
+import re
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -77,6 +79,50 @@ def print_marker_events(streams, t0):
                 print(f"  {name} @ {rel_t:8.3f}s -> {parsed}")
             except (TypeError, json.JSONDecodeError):
                 print(f"  {name} @ {rel_t:8.3f}s -> {value}")
+
+
+def safe_filename_part(value):
+    return re.sub(r"[^A-Za-z0-9_.-]+", "_", value).strip("_") or "stream"
+
+
+def export_numeric_streams_to_csv(streams, xdf_path, t0):
+    numeric_streams = [s for s in streams if get_stream_type(s).lower() != "markers"]
+    if not numeric_streams:
+        print("\nNo numeric streams found to export.")
+        return
+
+    print("\nExporting numeric streams to CSV:")
+    used_paths = set()
+    for stream in numeric_streams:
+        data = np.asarray(stream["time_series"])
+        timestamps = np.asarray(stream["time_stamps"])
+        if data.size == 0 or timestamps.size == 0:
+            continue
+
+        if data.ndim == 1:
+            data = data[:, None]
+
+        name = get_stream_name(stream)
+        labels = get_channel_labels(stream)
+        channel_count = data.shape[1]
+        header = ["lsl_time_s", "time_rel_s"]
+        header.extend(labels[idx] if idx < len(labels) else f"ch_{idx}" for idx in range(channel_count))
+
+        base_name = f"{xdf_path.stem}_{safe_filename_part(name)}"
+        csv_path = xdf_path.with_name(f"{base_name}.csv")
+        suffix = 2
+        while csv_path in used_paths or csv_path.exists():
+            csv_path = xdf_path.with_name(f"{base_name}_{suffix}.csv")
+            suffix += 1
+        used_paths.add(csv_path)
+
+        with open(csv_path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            for ts, row in zip(timestamps, data):
+                writer.writerow([ts, ts - t0, *row.tolist()])
+
+        print(f"  {name} -> {csv_path}")
 
 
 def plot_numeric_streams(streams, t0):
@@ -170,6 +216,7 @@ def main():
     all_timestamps = [ts for stream in streams for ts in stream["time_stamps"]]
     t0 = min(all_timestamps)
     print_marker_events(streams, t0)
+    export_numeric_streams_to_csv(streams, xdf_path, t0)
     plot_numeric_streams(streams, t0)
 
 
