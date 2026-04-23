@@ -1,0 +1,29 @@
+# Secrets and local credentials
+*credentials*.txt
+*.env
+.env
+
+# Recorded data and generated outputs
+*.xdf
+*.csv
+*.png
+*.jpg
+*.jpeg
+*.pdf
+LabRecorder-*/
+
+# Python cache/build artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Local editor/system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
