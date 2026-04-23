@@ -3,9 +3,9 @@
 Choose which Shimmer stream(s) and which EMOTIV app/headset(s) to run together.
 
 Examples:
-    python choose_shimmer_emotiv.py
-    python choose_shimmer_emotiv.py --shimmer both --ecg-port COM6 --emg-port COM11 --emotiv app1
-    python choose_shimmer_emotiv.py --shimmer ecg --ecg-port COM6 --emotiv both
+    python run_lsl_streams.py
+    python run_lsl_streams.py --shimmer both --ecg-port COM6 --emg-port COM11 --emotiv app1
+    python run_lsl_streams.py --shimmer ecg --ecg-port COM6 --emotiv both
 
 Credentials can be provided with command-line args or environment variables:
     EMOTIV_CLIENT_ID / EMOTIV_CLIENT_SECRET
@@ -36,8 +36,8 @@ from typing import List, Optional
 
 
 ROOT = Path(__file__).resolve().parent
-SHIMMER_SCRIPT = ROOT / "shimmer_combined.py"
-EMOTIV_SCRIPT = ROOT / "emotive.py"
+SHIMMER_SCRIPT = ROOT / "shimmer_lsl_bridge.py"
+EMOTIV_SCRIPT = ROOT / "emotiv_lsl_bridge.py"
 
 
 def prompt_choice(label: str, choices: List[str], default: str) -> str:

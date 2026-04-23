@@ -23,7 +23,7 @@ Usage example:
     python emotiv_cortex_to_lsl.py --headset-id INSIGHT2-XXXX
 
 Two-app / two-device example:
-    python emotive.py --headset-id INSIGHT2-AAAA --headset-id-2 INSIGHT2-BBBB
+    python emotiv_lsl_bridge.py --headset-id INSIGHT2-AAAA --headset-id-2 INSIGHT2-BBBB
 
 Notes:
 - Cortex uses WSS on localhost:6868.
@@ -562,7 +562,7 @@ async def run_device_bridge(
         bundles = build_outlets(
             subs,
             headset,
-            app_name=f"emotive.py:{config.label}",
+            app_name=f"emotiv_lsl_bridge.py:{config.label}",
             lsl_prefix=lsl_prefix,
         )
         if not bundles:
